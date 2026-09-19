@@ -5,6 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -33,6 +36,21 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun PuzzleGameApp(gameStateManager: GameStateManager) {
+    MaterialTheme(
+        colorScheme = darkColorScheme(
+            primary = Color(0xD4AF37),
+            secondary = Color(0xB8860B),
+            background = Color(0x0a0a0a),
+            surface = Color(0x1a1a1a),
+            surfaceVariant = Color(0x2a2a2a)
+        )
+    ) {
+        PuzzleGameContent(gameStateManager)
+    }
+}
+
+@Composable
+fun PuzzleGameContent(gameStateManager: GameStateManager) {
     val navController = rememberNavController()
     val gameState by gameStateManager.gameState.collectAsState(initial = GameState())
     val scope = rememberCoroutineScope()
