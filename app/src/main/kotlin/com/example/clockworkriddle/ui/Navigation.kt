@@ -8,7 +8,9 @@ sealed class Screen(val route: String) {
     }
     object Settings : Screen("settings")
     object Credits : Screen("credits")
-    object Story : Screen("story/{sceneId}") {
-        fun createRoute(sceneId: Int) = "story/$sceneId"
+    object StoryScene : Screen("story/{sceneId}") {
+        fun createRoute(sceneId: String) = "story/$sceneId"
     }
+    object CogCollection : Screen("cogs")
+    object FinalChallenge : Screen("final_challenge")
 }

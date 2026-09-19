@@ -9,7 +9,11 @@ data class GameState(
     val currentProgress: Map<Int, PuzzleProgress> = emptyMap(),
     val soundEnabled: Boolean = true,
     val musicEnabled: Boolean = true,
-    val hapticsEnabled: Boolean = true
+    val hapticsEnabled: Boolean = true,
+    val storyMilestones: Set<String> = emptySet(),
+    val currentChapter: Int = 0,
+    val finalChallengeSolved: Boolean = false,
+    val totalCogCount: Int = 0
 )
 
 @Serializable
@@ -66,10 +70,41 @@ enum class PuzzleFamily {
     }
 }
 
+@Serializable
 data class CogMilestone(
     val cogIndex: Int,
     val requiredCompletions: Int,
-    val description: String
+    val description: String,
+    val unlockedAt: Long = 0L
+)
+
+@Serializable
+data class StoryScene(
+    val id: String,
+    val chapter: Int,
+    val title: String,
+    val narrator: String,
+    val text: String,
+    val imageDescription: String,
+    val unlocksAtPuzzles: Int
+)
+
+@Serializable
+data class Cog(
+    val id: Int,
+    val name: String,
+    val description: String,
+    val unlockedAt: Long = 0L,
+    val isCollected: Boolean = false
+)
+
+@Serializable
+data class FinalChallengeStage(
+    val stageId: Int,
+    val puzzleFamily: PuzzleFamily,
+    val difficulty: Int,
+    val description: String,
+    val reward: String
 )
 
 sealed class PuzzleMove {

@@ -53,6 +53,12 @@ fun PuzzleGameApp(gameStateManager: GameStateManager) {
                 onPuzzleBook = {
                     navController.navigate(Screen.PuzzleBook.route)
                 },
+                onViewCogs = {
+                    navController.navigate(Screen.CogCollection.route)
+                },
+                onStartChallenge = {
+                    navController.navigate(Screen.FinalChallenge.route)
+                },
                 onSettings = {
                     navController.navigate(Screen.Settings.route)
                 },
@@ -172,6 +178,44 @@ fun PuzzleGameApp(gameStateManager: GameStateManager) {
         composable(Screen.Credits.route) {
             CreditsScreen(
                 onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(Screen.CogCollection.route) {
+            CogCollectionScreen(
+                collectedCogs = gameState.unlockedCogs,
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(Screen.FinalChallenge.route) {
+            FinalChallengeScreen(
+                currentStage = 1,
+                completedStages = emptySet(),
+                onStageStart = { stageId ->
+                    // Navigate to puzzle for this stage
+                },
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(
+            Screen.StoryScene.route,
+            arguments = listOf(navArgument("sceneId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val sceneId = backStackEntry.arguments?.getString("sceneId") ?: "opening_1"
+            StoryScreen(
+                sceneId = sceneId,
+                onContinue = {
+                    // Handle story progression
+                },
+                onClose = {
                     navController.popBackStack()
                 }
             )

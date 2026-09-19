@@ -20,6 +20,8 @@ fun MenuScreen(
     onNewGame: () -> Unit,
     onContinue: () -> Unit,
     onPuzzleBook: () -> Unit,
+    onViewCogs: () -> Unit,
+    onStartChallenge: () -> Unit,
     onSettings: () -> Unit,
     onCredits: () -> Unit,
     onDeleteSave: suspend () -> Unit
@@ -36,7 +38,9 @@ fun MenuScreen(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
         ) {
             Text(
                 "The Clockwork Riddle",
@@ -45,81 +49,129 @@ fun MenuScreen(
                 color = Color(0xD4AF37)
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            if (gameState.currentProgress.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0x2a2a2a), shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
+                        .padding(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(24.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("Progress", color = Color(0xB8860B), fontSize = 12.sp)
+                        Text("${gameState.completedPuzzles.size}/100", color = Color(0xD4AF37), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("Cogs", color = Color(0xB8860B), fontSize = 12.sp)
+                        Text("${gameState.unlockedCogs.size}/20", color = Color(0xD4AF37), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = onNewGame,
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
+                    .fillMaxWidth()
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0x8B7355)
                 )
             ) {
-                Text("New Game", fontSize = 18.sp)
+                Text("New Game", fontSize = 16.sp)
             }
 
             if (gameState.currentProgress.isNotEmpty()) {
                 Button(
                     onClick = onContinue,
                     modifier = Modifier
-                        .fillMaxWidth(0.8f)
+                        .fillMaxWidth()
                         .height(50.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0x8B7355)
                     )
                 ) {
-                    Text("Continue", fontSize = 18.sp)
+                    Text("Continue", fontSize = 16.sp)
                 }
             }
 
             Button(
                 onClick = onPuzzleBook,
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
+                    .fillMaxWidth()
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0x8B7355)
                 )
             ) {
-                Text("Puzzle Book", fontSize = 18.sp)
+                Text("Puzzle Book", fontSize = 16.sp)
+            }
+
+            if (gameState.currentProgress.isNotEmpty()) {
+                Button(
+                    onClick = onViewCogs,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xB8860B)
+                    )
+                ) {
+                    Text("Collected Cogs (${gameState.unlockedCogs.size})", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
+
+                if (gameState.completedPuzzles.size >= 95) {
+                    Button(
+                        onClick = onStartChallenge,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0x800020)
+                        )
+                    ) {
+                        Text("The Final Challenge!", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
             }
 
             Button(
                 onClick = onSettings,
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
+                    .fillMaxWidth()
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0x8B7355)
                 )
             ) {
-                Text("Settings", fontSize = 18.sp)
+                Text("Settings", fontSize = 16.sp)
             }
 
             Button(
                 onClick = onCredits,
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
+                    .fillMaxWidth()
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0x8B7355)
                 )
             ) {
-                Text("Credits", fontSize = 18.sp)
+                Text("Credits", fontSize = 16.sp)
             }
 
             if (gameState.currentProgress.isNotEmpty()) {
                 Button(
                     onClick = { showDeleteConfirm = true },
                     modifier = Modifier
-                        .fillMaxWidth(0.8f)
+                        .fillMaxWidth()
                         .height(50.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0x663333)
                     )
                 ) {
-                    Text("Delete Save", fontSize = 18.sp)
+                    Text("Delete Save", fontSize = 16.sp)
                 }
             }
         }
