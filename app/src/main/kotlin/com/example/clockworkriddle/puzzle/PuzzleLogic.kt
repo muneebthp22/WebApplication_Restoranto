@@ -226,37 +226,254 @@ class RiddleLogic(val question: String, val acceptedAnswers: List<String>) : IPu
     }
 }
 
-class TangramLogic : IPuzzleLogic {
-    override fun isValidMove(move: PuzzleMove): Boolean = true
-    override fun applyMove(move: PuzzleMove): Boolean = true
-    override fun isSolved(): Boolean = true
-    override fun reset() {}
-    override fun getHint(): String = "Rotate and drag pieces to match the target shape."
-    override fun getState(): String = ""
-    override fun loadState(state: String): Boolean = true
+class TangramLogic(
+    private val targetShape: List<Pair<Float, Float>>,
+    private val levelDifficulty: Int
+) : IPuzzleLogic {
+    data class TangramPiece(
+        val id: Int,
+        val type: PieceType,
+        var x: Float = 0f,
+        var y: Float = 0f,
+        var rotation: Int = 0
+    )
+
+    enum class PieceType {
+        LARGE_TRIANGLE, MEDIUM_TRIANGLE, SMALL_TRIANGLE,
+        SQUARE, PARALLELOGRAM
+    }
+
+    private val pieces = listOf(
+        TangramPiece(0, PieceType.LARGE_TRIANGLE, 50f, 50f, 0),
+        TangramPiece(1, PieceType.LARGE_TRIANGLE, 150f, 50f, 0),
+        TangramPiece(2, PieceType.MEDIUM_TRIANGLE, 100f, 200f, 0),
+        TangramPiece(3, PieceType.SMALL_TRIANGLE, 50f, 300f, 0),
+        TangramPiece(4, PieceType.SMALL_TRIANGLE, 150f, 300f, 0),
+        TangramPiece(5, PieceType.SQUARE, 100f, 350f, 0),
+        TangramPiece(6, PieceType.PARALLELOGRAM, 200f, 350f, 0)
+    )
+    private val initialState = pieces.map { it.copy() }
+
+    override fun isValidMove(move: PuzzleMove): Boolean {
+        return move is PuzzleMove.TangramMove &&
+               move.pieceId in 0..6
+    }
+
+    override fun applyMove(move: PuzzleMove): Boolean {
+        if (!isValidMove(move)) return false
+        if (move !is PuzzleMove.TangramMove) return false
+
+        val piece = pieces.find { it.id == move.pieceId } ?: return false
+        piece.x = move.x
+        piece.y = move.y
+        piece.rotation = move.rotation % 360
+        return true
+    }
+
+    override fun isSolved(): Boolean {
+        if (levelDifficulty == 0) return true
+        return pieces.all { piece ->
+            targetShape.any { target ->
+                kotlin.math.hypot(piece.x - target.first, piece.y - target.second) < 50f
+            }
+        }
+    }
+
+    override fun reset() {
+        for (i in pieces.indices) {
+            pieces[i].x = initialState[i].x
+            pieces[i].y = initialState[i].y
+            pieces[i].rotation = initialState[i].rotation
+        }
+    }
+
+    override fun getHint(): String = when (levelDifficulty) {
+        1 -> "Start with the two large triangles as the base."
+        2 -> "Place corner pieces first, then fill in the middle."
+        3 -> "Use the square as an anchor point."
+        4 -> "The parallelogram can rotate 45 degrees for better fit."
+        5 -> "All 7 pieces must connect to form the complete shape."
+        else -> "Rotate and drag pieces to match the target shape."
+    }
+
+    override fun getState(): String = pieces.joinToString("|") { piece ->
+        "${piece.id},${piece.x},${piece.y},${piece.rotation}"
+    }
+
+    override fun loadState(state: String): Boolean {
+        return try {
+            state.split("|").forEach { pieceStr ->
+                val parts = pieceStr.split(",")
+                val id = parts[0].toInt()
+                val piece = pieces.find { it.id == id } ?: return false
+                piece.x = parts[1].toFloat()
+                piece.y = parts[2].toFloat()
+                piece.rotation = parts[3].toInt()
+            }
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
 }
 
-class UntangleLogic(edgeCount: Int) : IPuzzleLogic {
-    private val vertices = MutableList(6) { Pair(0f, 0f) }
-    private val edges = List(edgeCount) { Pair(0, 1) }
+class UntangleLogic(private val edgeCount: Int, initialVertices: List<Pair<Float, Float>>) : IPuzzleLogic {
+    private var vertices = initialVertices.toMutableList()
+    private val edges = mutableListOf<Pair<Int, Int>>()
+    private val initialVertices = initialVertices.toList()
 
-    override fun isValidMove(move: PuzzleMove): Boolean = true
-    override fun applyMove(move: PuzzleMove): Boolean = true
+    init {
+        for (i in 0 until edgeCount) {
+            edges.add(Pair(i % vertices.size, (i + 1) % vertices.size))
+        }
+    }
+
+    override fun isValidMove(move: PuzzleMove): Boolean {
+        return move is PuzzleMove.UntangleMove &&
+               move.vertexId in vertices.indices
+    }
+
+    override fun applyMove(move: PuzzleMove): Boolean {
+        if (!isValidMove(move)) return false
+        if (move !is PuzzleMove.UntangleMove) return false
+
+        vertices[move.vertexId] = Pair(move.x, move.y)
+        return true
+    }
+
     override fun isSolved(): Boolean = !hasIntersections()
-    override fun reset() {}
-    override fun getHint(): String = "Drag vertices to untangle the lines without crossing."
-    override fun getState(): String = ""
-    override fun loadState(state: String): Boolean = true
 
-    private fun hasIntersections(): Boolean = false
+    override fun reset() {
+        vertices = initialVertices.toMutableList()
+    }
+
+    override fun getHint(): String = "Drag vertices to untangle the lines without crossing."
+
+    override fun getState(): String = vertices.joinToString("|") { "${it.first},${it.second}" }
+
+    override fun loadState(state: String): Boolean {
+        return try {
+            vertices = state.split("|").map {
+                val parts = it.split(",")
+                Pair(parts[0].toFloat(), parts[1].toFloat())
+            }.toMutableList()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    private fun hasIntersections(): Boolean {
+        for (i in edges.indices) {
+            for (j in i + 1 until edges.size) {
+                if (doSegmentsIntersect(
+                    vertices[edges[i].first], vertices[edges[i].second],
+                    vertices[edges[j].first], vertices[edges[j].second]
+                )) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    private fun doSegmentsIntersect(p1: Pair<Float, Float>, p2: Pair<Float, Float>,
+                                     p3: Pair<Float, Float>, p4: Pair<Float, Float>): Boolean {
+        val ccw = { a: Pair<Float, Float>, b: Pair<Float, Float>, c: Pair<Float, Float> ->
+            (c.second - a.second) * (b.first - a.first) > (b.second - a.second) * (c.first - a.first)
+        }
+        return ccw(p1, p3, p4) != ccw(p2, p3, p4) && ccw(p1, p2, p3) != ccw(p1, p2, p4)
+    }
 }
 
-class CircuitLogic : IPuzzleLogic {
-    override fun isValidMove(move: PuzzleMove): Boolean = true
-    override fun applyMove(move: PuzzleMove): Boolean = true
-    override fun isSolved(): Boolean = true
-    override fun reset() {}
-    override fun getHint(): String = "Rotate the circuit pieces to complete the connection."
-    override fun getState(): String = ""
-    override fun loadState(state: String): Boolean = true
+class CircuitLogic(private val gridSize: Int, initialRotations: List<Int>) : IPuzzleLogic {
+    private var rotations = initialRotations.toMutableList()
+    private val initialRotations = initialRotations.toList()
+    private val targetConnections = mutableSetOf<Pair<Int, Int>>()
+
+    init {
+        val size = gridSize * gridSize
+        for (i in 0 until size) {
+            val row = i / gridSize
+            val col = i % gridSize
+            if (col < gridSize - 1) targetConnections.add(Pair(i, i + 1))
+            if (row < gridSize - 1) targetConnections.add(Pair(i, i + gridSize))
+        }
+    }
+
+    override fun isValidMove(move: PuzzleMove): Boolean {
+        return move is PuzzleMove.RotationMove &&
+               move.itemId in rotations.indices
+    }
+
+    override fun applyMove(move: PuzzleMove): Boolean {
+        if (!isValidMove(move)) return false
+        if (move !is PuzzleMove.RotationMove) return false
+
+        rotations[move.itemId] = (rotations[move.itemId] + move.rotation) % 360
+        return true
+    }
+
+    override fun isSolved(): Boolean {
+        return isFullyConnected()
+    }
+
+    override fun reset() {
+        rotations = initialRotations.toMutableList()
+    }
+
+    override fun getHint(): String = "Rotate circuit pieces until all connections align."
+
+    override fun getState(): String = rotations.joinToString(",")
+
+    override fun loadState(state: String): Boolean {
+        return try {
+            rotations = state.split(",").map { it.toInt() }.toMutableList()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    private fun isFullyConnected(): Boolean {
+        val size = gridSize * gridSize
+        val visited = BooleanArray(size)
+        val queue = ArrayDeque<Int>()
+        queue.add(0)
+        visited[0] = true
+
+        while (queue.isNotEmpty()) {
+            val current = queue.removeFirst()
+            val row = current / gridSize
+            val col = current % gridSize
+
+            listOf(
+                Pair(row - 1, col),
+                Pair(row + 1, col),
+                Pair(row, col - 1),
+                Pair(row, col + 1)
+            ).forEach { (r, c) ->
+                if (r in 0 until gridSize && c in 0 until gridSize) {
+                    val neighbor = r * gridSize + c
+                    if (!visited[neighbor] && isConnected(current, neighbor)) {
+                        visited[neighbor] = true
+                        queue.add(neighbor)
+                    }
+                }
+            }
+        }
+
+        return visited.all { it }
+    }
+
+    private fun isConnected(from: Int, to: Int): Boolean {
+        val rotation = rotations[from] / 90
+        return when {
+            to == from + 1 && rotation % 2 == 0 -> true
+            to == from - 1 && rotation % 2 == 0 -> true
+            to == from + gridSize && rotation % 2 == 1 -> true
+            to == from - gridSize && rotation % 2 == 1 -> true
+            else -> false
+        }
+    }
 }

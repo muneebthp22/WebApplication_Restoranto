@@ -30,9 +30,40 @@ data class Puzzle(
 )
 
 enum class PuzzleFamily {
-    SLIDING_PICTURE, SLIDING_BLOCKS, TANGRAM, LIGHTS_OUT,
-    HANOI, MAGIC_SQUARE, SOLITAIRE, UNTANGLE,
-    CIRCUIT, RIDDLE
+    // Tier A - Foundation
+    RIDDLES, NUMBER_SQUARES, SLIDING_BLOCKS, LIGHTS_OUT, SLIDING_PICTURE,
+
+    // Tier B - Development
+    TIMING_GAUGES, PATTERN_MATCHING, BULB_MEMORY, ROTATING_PICTURE, HANOI,
+
+    // Tier C - Expansion
+    LINE_PARTITION, CIRCUIT_PATHS, UNTANGLE, SOLITAIRE, LIQUID_JARS,
+
+    // Tier D - Mastery
+    DOMINO_PLACEMENT, GEAR_TRAIN, CODE_LOCK, ONE_STROKE_PATH, TANGRAM;
+
+    fun displayName(): String = when (this) {
+        RIDDLES -> "Riddles"
+        NUMBER_SQUARES -> "Number Squares"
+        SLIDING_BLOCKS -> "Sliding Blocks"
+        LIGHTS_OUT -> "Lights Out"
+        SLIDING_PICTURE -> "Sliding Picture"
+        TIMING_GAUGES -> "Timing Gauges"
+        PATTERN_MATCHING -> "Pattern Matching"
+        BULB_MEMORY -> "Bulb Memory"
+        ROTATING_PICTURE -> "Rotating Picture"
+        HANOI -> "Tower of Hanoi"
+        LINE_PARTITION -> "Line Partition"
+        CIRCUIT_PATHS -> "Circuit Paths"
+        UNTANGLE -> "Untangle"
+        SOLITAIRE -> "Peg Solitaire"
+        LIQUID_JARS -> "Liquid Jars"
+        DOMINO_PLACEMENT -> "Domino Placement"
+        GEAR_TRAIN -> "Gear Train"
+        CODE_LOCK -> "Code Lock"
+        ONE_STROKE_PATH -> "One Stroke Path"
+        TANGRAM -> "Tangram"
+    }
 }
 
 data class CogMilestone(

@@ -145,41 +145,38 @@ fun PuzzleView(puzzle: Puzzle) {
         contentAlignment = Alignment.Center
     ) {
         when (puzzle.family) {
-            PuzzleFamily.SLIDING_PICTURE,
-            PuzzleFamily.SLIDING_BLOCKS -> {
-                SlidingPuzzleView(puzzleData = puzzle.data)
-            }
-            PuzzleFamily.LIGHTS_OUT -> {
-                LightsOutView(puzzleData = puzzle.data)
-            }
-            PuzzleFamily.TANGRAM -> {
-                TangramView()
-            }
-            PuzzleFamily.HANOI -> {
-                HanoiView()
-            }
-            PuzzleFamily.MAGIC_SQUARE -> {
-                MagicSquareView()
-            }
-            PuzzleFamily.SOLITAIRE -> {
-                SolitaireView()
-            }
-            PuzzleFamily.UNTANGLE -> {
-                UntangleView()
-            }
-            PuzzleFamily.CIRCUIT -> {
-                CircuitView()
-            }
-            PuzzleFamily.RIDDLE -> {
-                RiddleView()
-            }
+            PuzzleFamily.SLIDING_PICTURE -> SlidingPictureView(puzzleData = puzzle.data)
+            PuzzleFamily.SLIDING_BLOCKS -> SlidingBlocksView(puzzleData = puzzle.data)
+            PuzzleFamily.LIGHTS_OUT -> LightsOutView(puzzleData = puzzle.data)
+            PuzzleFamily.TANGRAM -> TangramView(puzzleData = puzzle.data)
+            PuzzleFamily.HANOI -> HanoiView(difficulty = puzzle.difficulty)
+            PuzzleFamily.NUMBER_SQUARES -> NumberSquaresView(puzzleData = puzzle.data)
+            PuzzleFamily.RIDDLES -> RiddlesView(puzzleData = puzzle.data)
+            PuzzleFamily.SOLITAIRE -> SolitaireView(puzzleData = puzzle.data)
+            PuzzleFamily.UNTANGLE -> UntangleView(puzzleData = puzzle.data)
+            PuzzleFamily.CIRCUIT_PATHS -> CircuitView(puzzleData = puzzle.data)
+            PuzzleFamily.TIMING_GAUGES -> TimingGaugesView(puzzleData = puzzle.data)
+            PuzzleFamily.PATTERN_MATCHING -> PatternMatchingView(puzzleData = puzzle.data)
+            PuzzleFamily.BULB_MEMORY -> BulbMemoryView(puzzleData = puzzle.data)
+            PuzzleFamily.ROTATING_PICTURE -> RotatingPictureView(puzzleData = puzzle.data)
+            PuzzleFamily.LINE_PARTITION -> LinePartitionView(puzzleData = puzzle.data)
+            PuzzleFamily.LIQUID_JARS -> LiquidJarsView(puzzleData = puzzle.data)
+            PuzzleFamily.DOMINO_PLACEMENT -> DominoPlacementView(puzzleData = puzzle.data)
+            PuzzleFamily.GEAR_TRAIN -> GearTrainView(puzzleData = puzzle.data)
+            PuzzleFamily.CODE_LOCK -> CodeLockView(puzzleData = puzzle.data)
+            PuzzleFamily.ONE_STROKE_PATH -> OneStrokePathView(puzzleData = puzzle.data)
         }
     }
 }
 
 @Composable
-fun SlidingPuzzleView(puzzleData: String) {
-    Text("Sliding Puzzle", color = Color.White)
+fun SlidingPictureView(puzzleData: String) {
+    Text("Sliding Picture Puzzle", color = Color.White)
+}
+
+@Composable
+fun SlidingBlocksView(puzzleData: String) {
+    Text("Sliding Blocks Puzzle", color = Color.White)
 }
 
 @Composable
@@ -188,36 +185,86 @@ fun LightsOutView(puzzleData: String) {
 }
 
 @Composable
-fun TangramView() {
-    Text("Tangram", color = Color.White)
+fun TangramView(puzzleData: String) {
+    Text("Tangram - ${puzzleData.takeIf { it.isNotEmpty() } ?: "Shape Assembly"}", color = Color.White)
 }
 
 @Composable
-fun HanoiView() {
-    Text("Tower of Hanoi", color = Color.White)
+fun HanoiView(difficulty: Int) {
+    Text("Tower of Hanoi - $difficulty Disks", color = Color.White)
 }
 
 @Composable
-fun MagicSquareView() {
-    Text("Magic Square", color = Color.White)
+fun NumberSquaresView(puzzleData: String) {
+    Text("Number Squares", color = Color.White)
 }
 
 @Composable
-fun SolitaireView() {
-    Text("Solitaire", color = Color.White)
+fun RiddlesView(puzzleData: String) {
+    Text("Riddle Challenge", color = Color.White)
 }
 
 @Composable
-fun UntangleView() {
-    Text("Untangle", color = Color.White)
+fun SolitaireView(puzzleData: String) {
+    Text("Peg Solitaire", color = Color.White)
 }
 
 @Composable
-fun CircuitView() {
-    Text("Circuit", color = Color.White)
+fun UntangleView(puzzleData: String) {
+    Text("Untangle Lines", color = Color.White)
 }
 
 @Composable
-fun RiddleView() {
-    Text("Riddle", color = Color.White)
+fun CircuitView(puzzleData: String) {
+    Text("Circuit Paths", color = Color.White)
+}
+
+@Composable
+fun TimingGaugesView(puzzleData: String) {
+    Text("Timing Gauges", color = Color.White)
+}
+
+@Composable
+fun PatternMatchingView(puzzleData: String) {
+    Text("Pattern Matching", color = Color.White)
+}
+
+@Composable
+fun BulbMemoryView(puzzleData: String) {
+    Text("Bulb Memory", color = Color.White)
+}
+
+@Composable
+fun RotatingPictureView(puzzleData: String) {
+    Text("Rotating Picture", color = Color.White)
+}
+
+@Composable
+fun LinePartitionView(puzzleData: String) {
+    Text("Line Partition", color = Color.White)
+}
+
+@Composable
+fun LiquidJarsView(puzzleData: String) {
+    Text("Liquid Jars", color = Color.White)
+}
+
+@Composable
+fun DominoPlacementView(puzzleData: String) {
+    Text("Domino Placement", color = Color.White)
+}
+
+@Composable
+fun GearTrainView(puzzleData: String) {
+    Text("Gear Train", color = Color.White)
+}
+
+@Composable
+fun CodeLockView(puzzleData: String) {
+    Text("Code Lock", color = Color.White)
+}
+
+@Composable
+fun OneStrokePathView(puzzleData: String) {
+    Text("One Stroke Path", color = Color.White)
 }
